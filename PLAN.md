@@ -37,33 +37,35 @@ token-counter/
 
 ## 5. Development Plan & TODOs
 
-- [ ] **1. Setup Project Environment**
-    - [ ] Initialize `pyproject.toml` for the project.
-    - [ ] Add dependencies: `typer`, `rich`, `tiktoken`.
-    - [ ] Create the basic directory structure (`src/token_counter`).
+- [x] **1. Setup Project Environment**
+    - [x] Initialize `pyproject.toml` for the project.
+    - [x] Add dependencies: `typer`, `rich`, `tiktoken`.
+    - [x] Create the basic directory structure (`src/token_counter`).
 
-- [ ] **2. Implement Core Logic**
-    - [ ] Create `src/token_counter/counter.py`.
-    - [ ] Implement a function to read a file and count tokens using `tiktoken`.
-    - [ ] The function should be efficient for large files (e.g., reading in chunks).
+- [x] **2. Implement Core Logic**
+    - [x] Create `src/token_counter/counter.py`.
+    - [x] Implement a function to read a file and count tokens using `tiktoken`.
+    - [x] The function should be efficient for large files (e.g., reading in chunks).
 
-- [ ] **3. Build the CLI**
-    - [ ] Create `src/token_counter/main.py`.
-    - [ ] Set up a `typer` application.
-    - [ ] Add a CLI command that accepts a file path as an argument.
-    - [ ] Integrate the `rich` library for progress tracking (e.g., `rich.progress`).
-    - [ ] Call the core counting logic from `counter.py`.
+- [x] **3. Build the CLI**
+    - [x] Create `src/token_counter/main.py`.
+    - [x] Set up a `typer` application.
+    - [x] Add a CLI command that accepts a file path as an argument.
+    - [x] Integrate the `rich` library for progress tracking (e.g., `rich.progress`).
+    - [x] Call the core counting logic from `counter.py`.
 
-- [ ] **4. Refine Output & UX**
-    - [ ] Use `rich.table.Table` to display the final results neatly.
-    - [ ] Include: File Path, Token Count, and maybe model/encoding used.
-    - [ ] Implement robust error handling (e.g., `FileNotFoundError`) with user-friendly `rich`-styled error messages.
+- [x] **4. Refine Output & UX**
+    - [x] Use `rich.table.Table` to display the final results neatly.
+    - [x] Include: File Path, Token Count, and maybe model/encoding used.
+    - [x] Implement robust error handling (e.g., `FileNotFoundError`) with user-friendly `rich`-styled error messages.
 
-- [ ] **5. Documentation**
-    - [ ] Create a `README.md` with installation and usage instructions.
-    - [ ] Add a `.gitignore` file.
+- [x] **5. Documentation**
+    - [x] Create a `README.md` with installation and usage instructions.
+    - [x] Add a `.gitignore` file.
 
-- [ ] **6. (Optional) Enhancements**
-    - [ ] Add an option to specify the `tiktoken` encoding model.
+- [ ] **6. Enhancements**
+    - [x] Implement interactive encoding selection using `InquirerPy` for `tiktoken` model, triggered by `--select-encoding` or `-s` flag, with default to `cl100k_base`.
     - [ ] Allow reading from `stdin` so text can be piped to the tool.
     - [ ] Add support for counting tokens in multiple files or directories.
+    - [ ] Update `README.md` with new features.
+    - [ ] Commit final changes to git.

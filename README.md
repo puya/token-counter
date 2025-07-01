@@ -9,6 +9,7 @@ This tool uses the `tiktoken` library, which is the same tokenizer used by OpenA
 -   **Fast Tokenization:** Leverages `tiktoken` for high-performance token counting.
 -   **Progress Bar:** A `rich`-powered progress bar shows the status of large files.
 -   **Styled Output:** Displays results in a clean, formatted table.
+-   **Flexible Encoding Selection:** Choose specific `tiktoken` encodings via a flag or an interactive menu.
 -   **Easy to Use:** Simple command-line interface for quick use.
 
 ## Installation & Usage
@@ -24,20 +25,31 @@ This tool uses the `tiktoken` library, which is the same tokenizer used by OpenA
 
     ```bash
     uv init
-    uv add typer rich tiktoken
+    uv add typer rich tiktoken InquirerPy
     uv pip install -e .
     ```
 
 3.  **Run the tool:**
 
     ```bash
-    token-counter <file-path>
+    # Count tokens using the default 'cl100k_base' encoding
+    token-counter my_document.txt
+
+    # Count tokens using a specific encoding (e.g., 'p50k_base')
+    token-counter my_document.txt --encoding p50k_base
+
+    # Interactively select the encoding from a list
+    token-counter my_document.txt --select-encoding
+    # or
+    token-counter my_document.txt -s
     ```
 
     For example:
 
     ```bash
-    token-counter my_document.txt
+    token-counter test_article.txt
+    token-counter test_article.txt -e p50k_base
+    token-counter test_article.txt -s
     ```
 
 ## Adding to PATH

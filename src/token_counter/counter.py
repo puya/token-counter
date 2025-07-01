@@ -24,6 +24,7 @@ def count_tokens(
         return total_tokens
     except FileNotFoundError:
         return -1
+    except ValueError: # Changed from KeyError to ValueError
+        return -3 # Invalid encoding name
     except Exception as e:
-        # In case of other errors, like permission denied
         return -2 # Using a different code for other errors
