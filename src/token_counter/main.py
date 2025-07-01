@@ -9,6 +9,7 @@ import sys
 import os
 from pathlib import Path
 import fnmatch
+import json
 
 from token_counter.counter import count_tokens
 
@@ -22,13 +23,15 @@ ENCODING_OPTIONS = {
     "gpt2": "Used by GPT-2 models (older)",
 }
 
-LLM_LIMITS = {
-    "gpt-3.5-turbo": 4096,
-    "gpt-4": 8192,
-    "gpt-4-32k": 32768,
-    "claude-2": 100000,
-    "gemini-pro": 32768,
-}
+LLM_LIMITS = {}
+
+try:
+    with open(Path(__file__).parent / "llm_limits.json", "r") as f:
+        LLM_LIMITS = json.load(f)
+except FileNotFoundError:
+    console.print("[bold red]Error:[/] llm_limits.json not found. LLM limit comparison will not be available.", style="bold")
+except json.JSONDecodeError:
+    console.print("[bold red]Error:[/] Could not decode llm_limits.json. LLM limit comparison will not be available.", style="bold")
 
 def is_excluded(path: str, exclude_patterns: List[str]) -> bool:
     """Checks if a path matches any of the exclusion patterns."""
@@ -107,7 +110,7 @@ def main(
                             if filename.endswith(('.txt', '.md', '.py', '.js', '.ts', '.json', '.html', '.css', '.log')):
                                 files_to_process.append(file_full_path)
             else:
-                console.print(f"[bold red]Error:[/bold red] Path not found or not a file/directory: [cyan]{p}[/cyan]", style="bold")
+                console.print(f"[bold red]Error:[/] Path not found or not a file/directory: [cyan]{p}[/cyan]", style="bold")
                 raise typer.Exit(code=1)
     else:
         if not sys.stdin.isatty(): # Check if stdin is being piped
@@ -129,7 +132,7 @@ def main(
             table.add_row("stdin", str(token_count), selected_encoding)
             console.print(table)
 
-            if check_limits:
+            if check_limits and LLM_LIMITS:
                 console.print("\n[bold yellow]LLM Context Window Limits:[/bold yellow]")
                 for model, limit in LLM_LIMITS.items():
                     percentage = (token_count / limit) * 100
@@ -138,11 +141,11 @@ def main(
 
             raise typer.Exit(code=0)
         else:
-            console.print("[bold red]Error:[/bold red] No input file(s) provided and no data piped from stdin.", style="bold")
+            console.print("[bold red]Error:[/] No input file(s) provided and no data piped from stdin.", style="bold")
             raise typer.Exit(code=1)
 
     if not files_to_process:
-        console.print("[bold red]Error:[/bold red] No text files found to process in the provided path(s) or all files were excluded.", style="bold")
+        console.print("[bold red]Error:[/] No text files found to process in the provided path(s) or all files were excluded.", style="bold")
         raise typer.Exit(code=1)
 
     total_tokens_overall = 0
@@ -163,13 +166,13 @@ def main(
             token_count = count_tokens(file_path=file_path, progress=progress, task_id=task, encoding_name=selected_encoding)
 
             if token_count == -1:
-                console.print(f"[bold red]Error:[/bold red] File not found at [cyan]{file_path}[/cyan]", style="bold")
+                console.print(f"[bold red]Error:[/] File not found at [cyan]{file_path}[/cyan]", style="bold")
                 # Continue to next file, don't exit
             elif token_count == -3:
-                console.print(f"[bold red]Error:[/bold red] Invalid encoding name: [cyan]{selected_encoding}[/cyan] for file [cyan]{file_path}[/cyan]", style="bold")
+                console.print(f"[bold red]Error:[/] Invalid encoding name: [cyan]{selected_encoding}[/cyan] for file [cyan]{file_path}[/cyan]", style="bold")
                 # Continue to next file, don't exit
             elif token_count == -2:
-                console.print(f"[bold red]Error:[/bold red] An error occurred while processing [cyan]{file_path}[/cyan].", style="bold")
+                console.print(f"[bold red]Error:[/] An error occurred while processing [cyan]{file_path}[/cyan].", style="bold")
                 # Continue to next file, don't exit
             else:
                 results_table.add_row(file_path, str(token_count), selected_encoding)
@@ -179,7 +182,7 @@ def main(
     if len(files_to_process) > 1:
         console.print(f"\n[bold green]Total Tokens Across All Files:[/bold green] [bold magenta]{total_tokens_overall}[/bold magenta]")
 
-    if check_limits:
+    if check_limits and LLM_LIMITS:
         console.print("\n[bold yellow]LLM Context Window Limits:[/bold yellow]")
         tokens_to_check = total_tokens_overall if len(files_to_process) > 1 else (token_count if 'token_count' in locals() else 0)
         

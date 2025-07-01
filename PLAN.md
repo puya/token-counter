@@ -69,3 +69,4 @@ token-counter/
     - [x] Add support for counting tokens in multiple files or directories.
     - [x] Add `--exclude` option for glob patterns in directory scanning.
     - [x] Add `--check-limits` option to compare token count against LLM context window limits.
+    - [x] Externalize LLM limits to `llm_limits.json`.

@@ -12,7 +12,7 @@ This tool uses the `tiktoken` library, which is the same tokenizer used by OpenA
 -   **Flexible Encoding Selection:** Choose specific `tiktoken` encodings via a flag or an interactive menu.
 -   **Multiple File/Directory Support:** Count tokens across multiple specified files or all supported files within a directory.
 -   **Exclusion Patterns:** Exclude files or directories using glob patterns.
--   **LLM Context Limit Comparison:** Compare token counts against common Large Language Model context window limits.
+-   **LLM Context Limit Comparison:** Compare token counts against common Large Language Model context window limits. These limits are loaded from `src/token_counter/llm_limits.json` and can be customized.
 -   **Stdin Support:** Process text piped directly to the tool.
 -   **Easy to Use:** Simple command-line interface for quick use.
 
@@ -80,6 +80,10 @@ This tool uses the `tiktoken` library, which is the same tokenizer used by OpenA
     token-counter . --exclude "*.md" --exclude "src/"
     token-counter test_article.txt -c
     ```
+
+## Customizing LLM Context Limits
+
+The LLM context window limits are stored in `src/token_counter/llm_limits.json`. You can edit this file to add, remove, or modify the models and their corresponding token limits to suit your needs.
 
 ## Adding to PATH
 
