@@ -54,6 +54,57 @@ def is_excluded(path: str, exclude_patterns: List[str]) -> bool:
             return True
     return False
 
+def format_number_with_separators(num: int) -> str:
+    """Format number with thousand separators (commas)."""
+    return f"{num:,}"
+
+def format_number_compact(num: int) -> str:
+    """Format number in compact form using K/M suffixes for better readability."""
+    if num >= 1_000_000:
+        if num % 1_000_000 == 0:
+            return f"{num // 1_000_000}M"
+        else:
+            return f"{num / 1_000_000:.1f}M"
+    elif num >= 1_000:
+        if num % 1_000 == 0:
+            return f"{num // 1_000}K"
+        else:
+            return f"{num / 1_000:.1f}K"
+    else:
+        return str(num)
+
+def group_models_by_provider(llm_limits: dict) -> dict:
+    """Group models by their providers for organized output."""
+    providers = {
+        "OpenAI": [],
+        "Anthropic": [],
+        "Google": [],
+        "Meta": [],
+        "xAI": [],
+        "Mistral": [],
+        "Cohere": []
+    }
+    
+    for model, limit in llm_limits.items():
+        model_lower = model.lower()
+        if model_lower.startswith('gpt'):
+            providers["OpenAI"].append((model, limit))
+        elif model_lower.startswith('claude'):
+            providers["Anthropic"].append((model, limit))
+        elif model_lower.startswith('gemini'):
+            providers["Google"].append((model, limit))
+        elif model_lower.startswith('llama'):
+            providers["Meta"].append((model, limit))
+        elif model_lower.startswith('grok'):
+            providers["xAI"].append((model, limit))
+        elif model_lower.startswith('mistral'):
+            providers["Mistral"].append((model, limit))
+        elif model_lower.startswith('command'):
+            providers["Cohere"].append((model, limit))
+    
+    # Remove empty providers
+    return {provider: models for provider, models in providers.items() if models}
+
 def discover_extensions_in_directory(directory_path: str, max_files: int = 1000, recursive: bool = False) -> List[str]:
     """Discover all unique file extensions in a directory."""
     extensions = set()
@@ -261,15 +312,21 @@ def main(
             table.add_column("Input Source", justify="left", style="cyan", no_wrap=True)
             table.add_column("Token Count", justify="right", style="magenta")
             table.add_column("Encoding", justify="left", style="green")
-            table.add_row("stdin", str(token_count), selected_encoding)
+            table.add_row("stdin", format_number_with_separators(token_count), selected_encoding)
             console.print(table)
 
             if check_limits and LLM_LIMITS:
                 console.print("\n[bold yellow]LLM Context Window Limits:[/bold yellow]")
-                for model, limit in LLM_LIMITS.items():
-                    percentage = (token_count / limit) * 100
-                    color = "green" if percentage <= 100 else "red"
-                    console.print(f"  - [bold]{model}:[/bold] {token_count}/{limit} tokens ([{color}]{percentage:.2f}%[/])")
+                grouped_models = group_models_by_provider(LLM_LIMITS)
+                
+                for provider, models in grouped_models.items():
+                    console.print(f"\n[bold cyan]{provider}:[/bold cyan]")
+                    for model, limit in models:
+                        percentage = (token_count / limit) * 100
+                        color = "green" if percentage <= 100 else "red"
+                        token_display = format_number_compact(token_count)
+                        limit_display = format_number_compact(limit)
+                        console.print(f"  - [bold]{model}:[/bold] {token_display}/{limit_display} tokens ([{color}]{percentage:.2f}%[/])")
 
             raise typer.Exit(code=0)
         else:
@@ -307,12 +364,12 @@ def main(
                 console.print(f"[bold red]Error:[/] An error occurred while processing [cyan]{file_path}[/cyan].", style="bold")
                 # Continue to next file, don't exit
             else:
-                results_table.add_row(file_path, str(token_count), selected_encoding)
+                results_table.add_row(file_path, format_number_with_separators(token_count), selected_encoding)
                 total_tokens_overall += token_count
 
     console.print(results_table)
     if len(files_to_process) > 1:
-        console.print(f"\n[bold green]Total Tokens Across All Files:[/bold green] [bold magenta]{total_tokens_overall}[/bold magenta]")
+        console.print(f"\n[bold green]Total Tokens Across All Files:[/bold green] [bold magenta]{format_number_with_separators(total_tokens_overall)}[/bold magenta]")
 
     if check_limits and LLM_LIMITS:
         console.print("\n[bold yellow]LLM Context Window Limits:[/bold yellow]")
@@ -322,10 +379,16 @@ def main(
             # This case handles when a single file was processed but resulted in an error
             pass # No limits to check if there was an error and no tokens counted
         else:
-            for model, limit in LLM_LIMITS.items():
-                percentage = (tokens_to_check / limit) * 100
-                color = "green" if percentage <= 100 else "red"
-                console.print(f"  - [bold]{model}:[/bold] {tokens_to_check}/{limit} tokens ([{color}]{percentage:.2f}%[/])")
+            grouped_models = group_models_by_provider(LLM_LIMITS)
+            
+            for provider, models in grouped_models.items():
+                console.print(f"\n[bold cyan]{provider}:[/bold cyan]")
+                for model, limit in models:
+                    percentage = (tokens_to_check / limit) * 100
+                    color = "green" if percentage <= 100 else "red"
+                    token_display = format_number_compact(tokens_to_check)
+                    limit_display = format_number_compact(limit)
+                    console.print(f"  - [bold]{model}:[/bold] {token_display}/{limit_display} tokens ([{color}]{percentage:.2f}%[/])")
 
 if __name__ == "__main__":
     app()
