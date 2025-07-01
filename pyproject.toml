@@ -1,24 +1,20 @@
 [project]
 name = "token-counter-cli"
-version = "0.1.1"
+version = "0.1.2"
 description = "A fast, user-friendly CLI tool to count tokens in text files using tiktoken, with LLM context limit comparison and rich formatting."
 authors = [
     { name = "Puya", email = "puya@example.com" },
 ]
 readme = "README.md"
 license = "MIT"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 keywords = ["cli", "tokens", "tiktoken", "openai", "llm", "text-analysis"]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
-    "Programming Language :: Python :: 3.11",
-    "Programming Language :: Python :: 3.12",
-    "Programming Language :: Python :: 3.13",
     "Topic :: Software Development :: Libraries :: Python Modules",
     "Topic :: Text Processing",
     "Topic :: Utilities",
