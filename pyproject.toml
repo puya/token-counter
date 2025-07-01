@@ -1,6 +1,6 @@
 [project]
 name = "token-counter-cli"
-version = "0.1.0"
+version = "0.1.1"
 description = "A fast, user-friendly CLI tool to count tokens in text files using tiktoken, with LLM context limit comparison and rich formatting."
 authors = [
     { name = "Puya", email = "puya@example.com" },
@@ -32,9 +32,9 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/puya/token-counter"
-Repository = "https://github.com/puya/token-counter"
-Issues = "https://github.com/puya/token-counter/issues"
+Homepage = "https://github.com/puya/token-counter-cli"
+Repository = "https://github.com/puya/token-counter-cli"
+Issues = "https://github.com/puya/token-counter-cli/issues"
 
 [project.scripts]
 token-counter = "token_counter.cli:app"
