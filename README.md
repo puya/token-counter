@@ -31,8 +31,8 @@ pip install token-counter-cli
 
 **Option 2: Install from source**
 ```bash
-git clone https://github.com/puya/token-counter.git
-cd token-counter
+git clone https://github.com/puya/token-counter-cli.git
+cd token-counter-cli
 uv init
 uv add typer rich tiktoken InquirerPy
 uv pip install -e .
