@@ -29,13 +29,7 @@ This tool uses the `tiktoken` library, which is the same tokenizer used by OpenA
 pip install token-counter-cli
 ```
 
-**Option 2: Install via Homebrew (macOS)**
-```bash
-brew tap puya/tools
-brew install token-counter-cli
-```
-
-**Option 3: Install from source**
+**Option 2: Install from source**
 ```bash
 git clone https://github.com/puya/token-counter.git
 cd token-counter
