@@ -10,6 +10,8 @@ This tool uses the `tiktoken` library, which is the same tokenizer used by OpenA
 -   **Progress Bar:** A `rich`-powered progress bar shows the status of large files.
 -   **Styled Output:** Displays results in a clean, formatted table.
 -   **Flexible Encoding Selection:** Choose specific `tiktoken` encodings via a flag or an interactive menu.
+-   **Multiple File/Directory Support:** Count tokens across multiple specified files or all supported files within a directory.
+-   **Stdin Support:** Process text piped directly to the tool.
 -   **Easy to Use:** Simple command-line interface for quick use.
 
 ## Installation & Usage
@@ -42,6 +44,15 @@ This tool uses the `tiktoken` library, which is the same tokenizer used by OpenA
     token-counter my_document.txt --select-encoding
     # or
     token-counter my_document.txt -s
+
+    # Count tokens from stdin
+    echo "Your text here" | token-counter
+
+    # Count tokens in multiple files
+    token-counter file1.txt file2.md
+
+    # Count tokens in all supported files within a directory
+    token-counter my_project_folder/
     ```
 
     For example:
@@ -50,6 +61,9 @@ This tool uses the `tiktoken` library, which is the same tokenizer used by OpenA
     token-counter test_article.txt
     token-counter test_article.txt -e p50k_base
     token-counter test_article.txt -s
+    echo "Hello world" | token-counter
+    token-counter README.md test_article.txt
+    token-counter src/
     ```
 
 ## Adding to PATH

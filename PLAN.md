@@ -65,7 +65,7 @@ token-counter/
 
 - [ ] **6. Enhancements**
     - [x] Implement interactive encoding selection using `InquirerPy` for `tiktoken` model, triggered by `--select-encoding` or `-s` flag, with default to `cl100k_base`.
-    - [ ] Allow reading from `stdin` so text can be piped to the tool.
-    - [ ] Add support for counting tokens in multiple files or directories.
+    - [x] Allow reading from `stdin` so text can be piped to the tool.
+    - [x] Add support for counting tokens in multiple files or directories.
     - [ ] Update `README.md` with new features.
     - [ ] Commit final changes to git.
