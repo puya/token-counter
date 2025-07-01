@@ -11,6 +11,8 @@ This tool uses the `tiktoken` library, which is the same tokenizer used by OpenA
 -   **Styled Output:** Displays results in a clean, formatted table.
 -   **Flexible Encoding Selection:** Choose specific `tiktoken` encodings via a flag or an interactive menu.
 -   **Multiple File/Directory Support:** Count tokens across multiple specified files or all supported files within a directory.
+-   **Exclusion Patterns:** Exclude files or directories using glob patterns.
+-   **LLM Context Limit Comparison:** Compare token counts against common Large Language Model context window limits.
 -   **Stdin Support:** Process text piped directly to the tool.
 -   **Easy to Use:** Simple command-line interface for quick use.
 
@@ -53,6 +55,17 @@ This tool uses the `tiktoken` library, which is the same tokenizer used by OpenA
 
     # Count tokens in all supported files within a directory
     token-counter my_project_folder/
+
+    # Exclude specific files or directories using glob patterns
+    token-counter my_project_folder/ --exclude "*.log" --exclude "node_modules/"
+
+    # Compare token count against common LLM context window limits
+    token-counter my_long_article.txt --check-limits
+    # or
+    token-counter my_long_article.txt -c
+
+    # Combine options
+    token-counter my_project_folder/ -s -x "*.test.py" -c
     ```
 
     For example:
@@ -64,6 +77,8 @@ This tool uses the `tiktoken` library, which is the same tokenizer used by OpenA
     echo "Hello world" | token-counter
     token-counter README.md test_article.txt
     token-counter src/
+    token-counter . --exclude "*.md" --exclude "src/"
+    token-counter test_article.txt -c
     ```
 
 ## Adding to PATH
