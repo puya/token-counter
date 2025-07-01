@@ -323,10 +323,15 @@ def main(
                     console.print(f"\n[bold cyan]{provider}:[/bold cyan]")
                     for model, limit in models:
                         percentage = (token_count / limit) * 100
-                        color = "green" if percentage <= 100 else "red"
+                        if percentage <= 80:
+                            color = "green"
+                        elif percentage <= 100:
+                            color = "bright_yellow"
+                        else:
+                            color = "red"
                         token_display = format_number_compact(token_count)
                         limit_display = format_number_compact(limit)
-                        console.print(f"  - [bold]{model}:[/bold] {token_display}/{limit_display} tokens ([{color}]{percentage:.2f}%[/])")
+                        console.print(f"  - [bold]{model}:[/bold] [purple]{token_display}[/purple] [dim]of[/dim] [blue]{limit_display}[/blue] [dim]tokens[/dim] ([{color}]{percentage:.2f}%[/{color}])")
 
             raise typer.Exit(code=0)
         else:
@@ -385,10 +390,15 @@ def main(
                 console.print(f"\n[bold cyan]{provider}:[/bold cyan]")
                 for model, limit in models:
                     percentage = (tokens_to_check / limit) * 100
-                    color = "green" if percentage <= 100 else "red"
+                    if percentage <= 80:
+                        color = "green"
+                    elif percentage <= 100:
+                        color = "bright_yellow"
+                    else:
+                        color = "red"
                     token_display = format_number_compact(tokens_to_check)
                     limit_display = format_number_compact(limit)
-                    console.print(f"  - [bold]{model}:[/bold] {token_display}/{limit_display} tokens ([{color}]{percentage:.2f}%[/])")
+                    console.print(f"  - [bold]{model}:[/bold] [purple]{token_display}[/purple] [dim]of[/dim] [blue]{limit_display}[/blue] [dim]tokens[/dim] ([{color}]{percentage:.2f}%[/{color}])")
 
 if __name__ == "__main__":
     app()
