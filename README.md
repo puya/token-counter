@@ -37,16 +37,8 @@ This tool uses the `tiktoken` library, which is the same tokenizer used by OpenA
 3.  **Run the tool:**
 
     ```bash
-    # Count tokens using the default 'cl100k_base' encoding
+    # Basic usage - count tokens using default 'cl100k_base' encoding
     token-counter my_document.txt
-
-    # Count tokens using a specific encoding (e.g., 'p50k_base')
-    token-counter my_document.txt --model p50k_base
-
-    # Interactively select the encoding from a list
-    token-counter my_document.txt --select-encoding
-    # or
-    token-counter my_document.txt -s
 
     # Count tokens from stdin
     echo "Your text here" | token-counter
@@ -56,28 +48,71 @@ This tool uses the `tiktoken` library, which is the same tokenizer used by OpenA
 
     # Count tokens in all supported files within a directory
     token-counter my_project_folder/
-
-    # Exclude specific files or directories using glob patterns
-    token-counter my_project_folder/ --exclude "*.log" --exclude "node_modules/"
-
-    # Compare token count against common LLM context window limits
-    token-counter my_long_article.txt --check-limits
-    # or
-    token-counter my_long_article.txt -c
-
-    # Override default file extensions (only process specified extensions)
-    token-counter my_project_folder/ --extension .xml,.yaml,.toml
-
-    # Add new file extensions to the default list
-    token-counter my_project_folder/ --add-extensions .log,.temp
-    # or
-    token-counter my_project_folder/ -a .log,.temp
-
-    # Combine options
-    token-counter my_project_folder/ -s -x "*.test.py" -c -e .py,.js
     ```
 
-    For example:
+## Usage Options
+
+### Model Selection
+```bash
+# Use a specific encoding model
+token-counter my_document.txt --model p50k_base
+token-counter my_document.txt -m p50k_base
+
+# Interactively select the encoding from a list
+token-counter my_document.txt --select-encoding
+token-counter my_document.txt -s
+```
+
+### File Extension Control
+```bash
+# Override default extensions (only process specified extensions)
+token-counter my_project_folder/ --extension .xml,.yaml,.toml
+token-counter my_project_folder/ -e .xml,.yaml,.toml
+
+# Add new extensions to the default list
+token-counter my_project_folder/ --add-extensions .log,.temp
+token-counter my_project_folder/ -a .log,.temp
+```
+
+### File/Directory Exclusion
+```bash
+# Exclude specific files or directories using glob patterns
+token-counter my_project_folder/ --exclude "*.log" --exclude "node_modules/"
+token-counter my_project_folder/ -x "*.log" -x "node_modules/"
+```
+
+### LLM Context Limit Comparison
+```bash
+# Compare token count against common LLM context window limits
+token-counter my_long_article.txt --check-limits
+token-counter my_long_article.txt -c
+```
+
+### Combined Options
+```bash
+# Complex example combining multiple options
+token-counter my_project_folder/ -s -x "*.test.py" -c -e .py,.js
+
+# Process only Python files, exclude tests, and check limits
+token-counter . --extension .py --exclude "*test*" --check-limits
+
+# Add log files to processing and use specific model
+token-counter logs/ --add-extensions .log --model p50k_base
+```
+
+## Complete Option Reference
+
+| Option | Short | Description |
+|--------|-------|-------------|
+| `--model` | `-m` | Specify the encoding model (e.g., 'cl100k_base', 'p50k_base') |
+| `--select-encoding` | `-s` | Interactively select the encoding model from a list |
+| `--extension` | `-e` | Override default file extensions (comma-separated) |
+| `--add-extensions` | `-a` | Add to default file extensions (comma-separated) |
+| `--exclude` | `-x` | Exclude files/directories using glob patterns (repeatable) |
+| `--check-limits` | `-c` | Compare token count against LLM context window limits |
+| `--help` | | Show help message and exit |
+
+### Examples
 
     ```bash
     token-counter test_article.txt

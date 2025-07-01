@@ -15,4 +15,4 @@ dependencies = [
 ]
 
 [project.scripts]
-token-counter = "token_counter.main:app"
+token-counter = "token_counter.cli:app"

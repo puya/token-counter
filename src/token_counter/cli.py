@@ -27,7 +27,7 @@ LLM_LIMITS = {}
 FILE_EXTENSIONS = ()
 
 try:
-    with open(Path(__file__).parent / "llm_limits.json", "r") as f:
+    with open(Path(__file__).parent / "config" / "llm_limits.json", "r") as f:
         LLM_LIMITS = json.load(f)
 except FileNotFoundError:
     console.print("[bold red]Error:[/] llm_limits.json not found. LLM limit comparison will not be available.", style="bold")
@@ -35,7 +35,7 @@ except json.JSONDecodeError:
     console.print("[bold red]Error:[/] Could not decode llm_limits.json. LLM limit comparison will not be available.", style="bold")
 
 try:
-    with open(Path(__file__).parent / "allowed_extensions.json", "r") as f:
+    with open(Path(__file__).parent / "config" / "allowed_extensions.json", "r") as f:
         FILE_EXTENSIONS = tuple(json.load(f).get("default_extensions", []))
 except FileNotFoundError:
     console.print("[bold red]Error:[/] allowed_extensions.json not found. Defaulting to a limited set of file extensions.", style="bold")

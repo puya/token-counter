@@ -28,11 +28,19 @@ token-counter/
 ├── PLAN.md
 ├── pyproject.toml
 ├── README.md
+├── tests/
+│   ├── __init__.py
+│   ├── test_cli.py          # Tests for CLI functionality
+│   └── test_counter.py      # Tests for core logic
 └── src/
     └── token_counter/
         ├── __init__.py
-        ├── main.py          # CLI logic using typer and rich
-        └── counter.py       # Core token counting functionality
+        ├── __main__.py      # Enables `python -m token_counter`
+        ├── cli.py           # CLI logic using typer and rich
+        ├── counter.py       # Core token counting functionality
+        └── config/
+            ├── allowed_extensions.json  # Default file extensions
+            └── llm_limits.json         # LLM context window limits
 ```
 
 ## 5. Development Plan & TODOs
@@ -63,7 +71,7 @@ token-counter/
     - [x] Create a `README.md` with installation and usage instructions.
     - [x] Add a `.gitignore` file.
 
-- [ ] **6. Enhancements**
+- [x] **6. Enhancements**
     - [x] Implement interactive encoding selection using `InquirerPy` for `tiktoken` model, triggered by `--select-encoding` or `-s` flag, with default to `cl100k_base`.
     - [x] Allow reading from `stdin` so text can be piped to the tool.
     - [x] Add support for counting tokens in multiple files or directories.
@@ -75,3 +83,15 @@ token-counter/
     - [x] Add `--add-extensions` (or `-a`) flag: This flag allows users to **add** new file extensions to the default list of allowed extensions loaded from `allowed_extensions.json`. Files with these added extensions will be processed in addition to the default ones. This flag will be ignored if `--extension` is also provided.
     - [x] Update `README.md` with new features.
     - [x] Commit final changes to git.
+
+- [x] **7. Repository Structure Cleanup**
+    - [x] Remove redundant root-level `main.py` file.
+    - [x] Rename `src/token_counter/main.py` to `src/token_counter/cli.py` for better clarity.
+    - [x] Add `src/token_counter/__main__.py` to enable `python -m token_counter` execution.
+    - [x] Create `src/token_counter/config/` directory for configuration files.
+    - [x] Move `allowed_extensions.json` and `llm_limits.json` to `config/` subdirectory.
+    - [x] Update import paths in code to reflect new structure.
+    - [x] Update `pyproject.toml` entry point to use new CLI module name.
+    - [x] Add `tests/` directory structure for future testing.
+    - [x] Update project structure documentation in PLAN.md.
+    - [x] Commit repository cleanup changes.
