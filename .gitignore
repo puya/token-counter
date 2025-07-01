@@ -93,6 +93,9 @@ ENV/
 env.bak/
 venv.bak/
 
+# Claude Code settings
+.claude/
+
 # uv
 # Keep uv.lock for CLI applications (reproducible builds)
 # Uncomment next line if you want to ignore it for library development:
