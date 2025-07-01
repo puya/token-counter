@@ -1,6 +1,6 @@
 [project]
 name = "token-counter-cli"
-version = "0.1.3"
+version = "0.1.4"
 description = "A fast, user-friendly CLI tool to count tokens in text files using tiktoken, with LLM context limit comparison and rich formatting."
 authors = [
     { name = "Puya", email = "puya@example.com" },
