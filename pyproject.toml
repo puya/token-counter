@@ -1,5 +1,5 @@
 [project]
-name = "token-counter"
+name = "token-counter-cli"
 version = "0.1.0"
 description = "A fast, user-friendly CLI tool to count tokens in text files using tiktoken, with LLM context limit comparison and rich formatting."
 authors = [

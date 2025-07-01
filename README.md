@@ -2,7 +2,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
-[![PyPI](https://img.shields.io/badge/PyPI-coming%20soon-orange.svg)](https://pypi.org/)
+[![PyPI](https://img.shields.io/pypi/v/token-counter-cli.svg)](https://pypi.org/project/token-counter-cli/)
 
 A simple, fast, and user-friendly command-line tool to count the number of tokens in a text file. It provides a progress bar for large files and displays the output in a clean, readable format.
 
@@ -24,36 +24,35 @@ This tool uses the `tiktoken` library, which is the same tokenizer used by OpenA
 
 ## Installation & Usage
 
-1.  **Clone the repository:**
+**Option 1: Install from PyPI (Recommended)**
+```bash
+pip install token-counter-cli
+```
 
-    ```bash
-    git clone <repository-url>
-    cd token-counter
-    ```
+**Option 2: Install from source**
+```bash
+git clone <repository-url>
+cd token-counter
+uv init
+uv add typer rich tiktoken InquirerPy
+uv pip install -e .
+```
 
-2.  **Install dependencies using `uv`:**
+## Usage
 
-    ```bash
-    uv init
-    uv add typer rich tiktoken InquirerPy
-    uv pip install -e .
-    ```
+```bash
+# Basic usage - count tokens using default 'cl100k_base' encoding
+token-counter my_document.txt
 
-3.  **Run the tool:**
+# Count tokens from stdin
+echo "Your text here" | token-counter
 
-    ```bash
-    # Basic usage - count tokens using default 'cl100k_base' encoding
-    token-counter my_document.txt
+# Count tokens in multiple files
+token-counter file1.txt file2.md
 
-    # Count tokens from stdin
-    echo "Your text here" | token-counter
-
-    # Count tokens in multiple files
-    token-counter file1.txt file2.md
-
-    # Count tokens in all supported files within a directory
-    token-counter my_project_folder/
-    ```
+# Count tokens in all supported files within a directory
+token-counter my_project_folder/
+```
 
 ## Usage Options
 
