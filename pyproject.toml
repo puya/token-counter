@@ -6,16 +6,14 @@ authors = [
     { name = "Puya", email = "puya@example.com" },
 ]
 readme = "README.md"
-license = { text = "MIT" }
-requires-python = ">=3.8"
+license = "MIT"
+requires-python = ">=3.9"
 keywords = ["cli", "tokens", "tiktoken", "openai", "llm", "text-analysis"]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
-    "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
@@ -40,3 +38,9 @@ Issues = "https://github.com/puya/token-counter/issues"
 
 [project.scripts]
 token-counter = "token_counter.cli:app"
+
+[dependency-groups]
+dev = [
+    "build>=1.2.2.post1",
+    "twine>=6.1.0",
+]
