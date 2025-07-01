@@ -12,6 +12,7 @@ This tool uses the `tiktoken` library, which is the same tokenizer used by OpenA
 -   **Flexible Encoding Selection:** Choose specific `tiktoken` encodings via a flag or an interactive menu.
 -   **Multiple File/Directory Support:** Count tokens across multiple specified files or all supported files within a directory.
 -   **Exclusion Patterns:** Exclude files or directories using glob patterns.
+-   **File Extension Control:** Override default file extensions or add new ones to customize which files are processed.
 -   **LLM Context Limit Comparison:** Compare token counts against common Large Language Model context window limits. These limits are loaded from `src/token_counter/llm_limits.json` and can be customized.
 -   **Stdin Support:** Process text piped directly to the tool.
 -   **Easy to Use:** Simple command-line interface for quick use.
@@ -40,7 +41,7 @@ This tool uses the `tiktoken` library, which is the same tokenizer used by OpenA
     token-counter my_document.txt
 
     # Count tokens using a specific encoding (e.g., 'p50k_base')
-    token-counter my_document.txt --encoding p50k_base
+    token-counter my_document.txt --model p50k_base
 
     # Interactively select the encoding from a list
     token-counter my_document.txt --select-encoding
@@ -64,22 +65,42 @@ This tool uses the `tiktoken` library, which is the same tokenizer used by OpenA
     # or
     token-counter my_long_article.txt -c
 
+    # Override default file extensions (only process specified extensions)
+    token-counter my_project_folder/ --extension .xml,.yaml,.toml
+
+    # Add new file extensions to the default list
+    token-counter my_project_folder/ --add-extensions .log,.temp
+    # or
+    token-counter my_project_folder/ -a .log,.temp
+
     # Combine options
-    token-counter my_project_folder/ -s -x "*.test.py" -c
+    token-counter my_project_folder/ -s -x "*.test.py" -c -e .py,.js
     ```
 
     For example:
 
     ```bash
     token-counter test_article.txt
-    token-counter test_article.txt -e p50k_base
+    token-counter test_article.txt -m p50k_base
     token-counter test_article.txt -s
     echo "Hello world" | token-counter
     token-counter README.md test_article.txt
     token-counter src/
     token-counter . --exclude "*.md" --exclude "src/"
     token-counter test_article.txt -c
+    token-counter . --extension .py,.js
+    token-counter . -e .py,.js
+    token-counter . --add-extensions .log,.xml
     ```
+
+## Customizing File Extensions
+
+By default, the tool processes files with extensions defined in `src/token_counter/allowed_extensions.json`. You can customize which files are processed using command-line options:
+
+-   **`--extension` or `-e`**: Override the default extensions entirely. Only files with the specified extensions will be processed.
+-   **`--add-extensions` or `-a`**: Add new extensions to the default list without removing the existing ones.
+
+If both flags are provided, `--extension` takes precedence and a warning will be displayed.
 
 ## Customizing LLM Context Limits
 

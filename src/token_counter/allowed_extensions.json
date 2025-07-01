@@ -1,0 +1,12 @@
+{
+  "default_extensions": [
+    ".txt",
+    ".md",
+    ".py",
+    ".js",
+    ".ts",
+    ".json",
+    ".html",
+    ".css"
+  ]
+}

@@ -24,6 +24,7 @@ ENCODING_OPTIONS = {
 }
 
 LLM_LIMITS = {}
+FILE_EXTENSIONS = ()
 
 try:
     with open(Path(__file__).parent / "llm_limits.json", "r") as f:
@@ -32,6 +33,16 @@ except FileNotFoundError:
     console.print("[bold red]Error:[/] llm_limits.json not found. LLM limit comparison will not be available.", style="bold")
 except json.JSONDecodeError:
     console.print("[bold red]Error:[/] Could not decode llm_limits.json. LLM limit comparison will not be available.", style="bold")
+
+try:
+    with open(Path(__file__).parent / "allowed_extensions.json", "r") as f:
+        FILE_EXTENSIONS = tuple(json.load(f).get("default_extensions", []))
+except FileNotFoundError:
+    console.print("[bold red]Error:[/] allowed_extensions.json not found. Defaulting to a limited set of file extensions.", style="bold")
+    FILE_EXTENSIONS = ('.txt', '.md', '.py', '.js', '.ts', '.json', '.html', '.css', '.log')
+except json.JSONDecodeError:
+    console.print("[bold red]Error:[/] Could not decode allowed_extensions.json. Defaulting to a limited set of file extensions.", style="bold")
+    FILE_EXTENSIONS = ('.txt', '.md', '.py', '.js', '.ts', '.json', '.html', '.css', '.log')
 
 def is_excluded(path: str, exclude_patterns: List[str]) -> bool:
     """Checks if a path matches any of the exclusion patterns."""
@@ -46,10 +57,10 @@ def is_excluded(path: str, exclude_patterns: List[str]) -> bool:
 @app.command()
 def main(
     paths: Optional[List[str]] = typer.Argument(None, help="One or more file paths or directory paths to count tokens in. If not provided, reads from stdin."),
-    encoding: Optional[str] = typer.Option(
+    model: Optional[str] = typer.Option(
         None, 
-        "--encoding", 
-        "-e", 
+        "--model", 
+        "-m", 
         help="Specify the encoding model (e.g., 'cl100k_base')."
     ),
     select_encoding: bool = typer.Option(
@@ -69,6 +80,18 @@ def main(
         "--check-limits", 
         "-c", 
         help="Compare the token count against common LLM context window limits."
+    ),
+    extension: Optional[List[str]] = typer.Option(
+        None, 
+        "--extension", 
+        "-e", 
+        help="""Comma-separated list of file extensions to include (e.g., '.xml,.yaml'). This will override the default allowed extensions."""
+    ),
+    add_extensions: Optional[List[str]] = typer.Option(
+        None, 
+        "--add-extensions", 
+        "-a", 
+        help="""Comma-separated list of file extensions to add to the default allowed extensions (e.g., '.log,.temp')."""
     )
 ):
     """Counts the tokens in text files or stdin and displays the result."""
@@ -88,18 +111,41 @@ def main(
             qmark="[?]",
             pointer="->",
         ).execute()
-    elif encoding is not None:
-        selected_encoding = encoding # Use the provided encoding value
+    elif model is not None:
+        selected_encoding = model # Use the provided model value
 
     files_to_process = []
     exclude_patterns = exclude or []
+    
+    current_file_extensions = list(FILE_EXTENSIONS) # Start with a mutable list of default extensions
+    
+    if extension and add_extensions:
+        console.print("[bold yellow]Warning:[/] Both --extension and --add-extensions were provided. --extension will take precedence.", style="bold")
+        # Process --extension as it takes precedence
+        processed_extensions = []
+        for ext_arg in extension:
+            processed_extensions.extend([e.strip() if e.strip().startswith('.') else '.' + e.strip() for e in ext_arg.split(',')])
+        current_file_extensions = processed_extensions
+    elif extension:
+        processed_extensions = []
+        for ext_arg in extension:
+            processed_extensions.extend([e.strip() if e.strip().startswith('.') else '.' + e.strip() for e in ext_arg.split(',')])
+        current_file_extensions = processed_extensions
+    elif add_extensions:
+        processed_extensions = []
+        for ext_arg in add_extensions:
+            processed_extensions.extend([e.strip() if e.strip().startswith('.') else '.' + e.strip() for e in ext_arg.split(',')])
+        current_file_extensions.extend(processed_extensions)
+
+    current_file_extensions = tuple(sorted(list(set(current_file_extensions)))) # Remove duplicates and convert to tuple
 
     if paths:
         for p in paths:
             path_obj = Path(p)
             if path_obj.is_file():
                 if not is_excluded(str(path_obj), exclude_patterns):
-                    files_to_process.append(str(path_obj))
+                    if path_obj.suffix in current_file_extensions:
+                        files_to_process.append(str(path_obj))
             elif path_obj.is_dir():
                 for root, dirs, filenames in os.walk(path_obj):
                     # Filter out excluded directories from traversal
@@ -107,7 +153,7 @@ def main(
                     for filename in filenames:
                         file_full_path = os.path.join(root, filename)
                         if not is_excluded(file_full_path, exclude_patterns): # Exclude files
-                            if filename.endswith(('.txt', '.md', '.py', '.js', '.ts', '.json', '.html', '.css', '.log')):
+                            if Path(file_full_path).suffix in current_file_extensions:
                                 files_to_process.append(file_full_path)
             else:
                 console.print(f"[bold red]Error:[/] Path not found or not a file/directory: [cyan]{p}[/cyan]", style="bold")

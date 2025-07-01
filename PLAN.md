@@ -70,3 +70,8 @@ token-counter/
     - [x] Add `--exclude` option for glob patterns in directory scanning.
     - [x] Add `--check-limits` option to compare token count against LLM context window limits.
     - [x] Externalize LLM limits to `llm_limits.json`.
+    - [x] Externalize default file extensions (whitelist) to `allowed_extensions.json`.
+    - [x] Add `--extension` flag: This flag allows users to **override** the default list of allowed file extensions loaded from `allowed_extensions.json`, meaning only files with the specified extensions will be processed. If both `--extension` and `--add-extensions` are provided, `--extension` will take precedence, and a warning will be displayed to the user.
+    - [x] Add `--add-extensions` (or `-a`) flag: This flag allows users to **add** new file extensions to the default list of allowed extensions loaded from `allowed_extensions.json`. Files with these added extensions will be processed in addition to the default ones. This flag will be ignored if `--extension` is also provided.
+    - [x] Update `README.md` with new features.
+    - [x] Commit final changes to git.
