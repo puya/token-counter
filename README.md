@@ -153,18 +153,49 @@ token-counter logs/ --add-extensions .log --model p50k_base --recursive
     token-counter . -r -a "*" -x ".git/"
     ```
 
-## Customizing File Extensions
+## Configuration Files
 
-By default, the tool processes files with extensions defined in `src/token_counter/allowed_extensions.json`. You can customize which files are processed using command-line options:
+The token-counter tool uses two JSON configuration files to customize its behavior:
 
+### File Extensions Configuration (`src/token_counter/config/allowed_extensions.json`)
+
+This file defines which file extensions are processed by default when scanning directories. The current default extensions include:
+
+```json
+{
+  "default_extensions": [
+    ".txt", ".md", ".py", ".js", ".ts", 
+    ".json", ".html", ".css"
+  ]
+}
+```
+
+**Command-line overrides:**
 -   **`--extension` or `-e`**: Override the default extensions entirely. Only files with the specified extensions will be processed.
--   **`--add-extensions` or `-a`**: Add new extensions to the default list without removing the existing ones.
+-   **`--add-extensions` or `-a`**: Add new extensions to the default list without removing the existing ones. Use `*` for auto-discovery.
 
 If both flags are provided, `--extension` takes precedence and a warning will be displayed.
 
-## Customizing LLM Context Limits
+### LLM Context Limits Configuration (`src/token_counter/config/llm_limits.json`)
 
-The LLM context window limits are stored in `src/token_counter/llm_limits.json`. You can edit this file to add, remove, or modify the models and their corresponding token limits to suit your needs.
+This file contains context window limits for major LLM providers and models, used when the `--check-limits` flag is specified. The file includes the latest models from:
+
+- **OpenAI**: GPT-4.1 series (1M tokens), GPT-4.5 (1M tokens), GPT-4o series
+- **Anthropic**: Claude 4 Opus/Sonnet (200K tokens), Claude 3.7/3.5 Sonnet
+- **Google**: Gemini 2.5 Pro/Flash (1M tokens), Gemini 1.5 Pro (2M tokens)
+- **Meta**: Llama 4 Scout (10M tokens), Llama 4 Maverick (1M tokens), Llama 3.x series
+- **xAI**: Grok 3 (~131K tokens)
+- **Mistral**: Large 2, Medium 3, Small 3.1 (128K tokens)
+- **Cohere**: Command A (256K tokens), Command R/R+ (128K tokens)
+
+You can edit this file to add, remove, or modify models and their corresponding token limits to suit your needs.
+
+**Example usage:**
+```bash
+token-counter large_document.txt --check-limits
+```
+
+This will show how your token count compares against all configured model limits.
 
 ## Adding to PATH
 
