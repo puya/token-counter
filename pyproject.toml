@@ -1,0 +1,17 @@
+[project]
+name = "token-counter"
+version = "0.1.0"
+description = "A simple CLI tool to count tokens in a text file."
+authors = [
+    { name = "Your Name", email = "you@example.com" },
+]
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "rich>=14.0.0",
+    "tiktoken>=0.9.0",
+    "typer>=0.16.0",
+]
+
+[project.scripts]
+token-counter = "token_counter.main:app"
