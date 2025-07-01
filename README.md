@@ -12,7 +12,8 @@ This tool uses the `tiktoken` library, which is the same tokenizer used by OpenA
 -   **Flexible Encoding Selection:** Choose specific `tiktoken` encodings via a flag or an interactive menu.
 -   **Multiple File/Directory Support:** Count tokens across multiple specified files or all supported files within a directory.
 -   **Exclusion Patterns:** Exclude files or directories using glob patterns.
--   **File Extension Control:** Override default file extensions or add new ones to customize which files are processed.
+-   **File Extension Control:** Override default file extensions or add new ones to customize which files are processed. Supports wildcard auto-discovery.
+-   **Recursive Directory Scanning:** Optionally scan subdirectories recursively for comprehensive project analysis.
 -   **LLM Context Limit Comparison:** Compare token counts against common Large Language Model context window limits. These limits are loaded from `src/token_counter/llm_limits.json` and can be customized.
 -   **Stdin Support:** Process text piped directly to the tool.
 -   **Easy to Use:** Simple command-line interface for quick use.
@@ -72,6 +73,10 @@ token-counter my_project_folder/ -e .xml,.yaml,.toml
 # Add new extensions to the default list
 token-counter my_project_folder/ --add-extensions .log,.temp
 token-counter my_project_folder/ -a .log,.temp
+
+# Auto-discover all extensions in target directory
+token-counter my_project_folder/ --add-extensions "*"
+token-counter my_project_folder/ -a "*"
 ```
 
 ### File/Directory Exclusion
@@ -79,6 +84,19 @@ token-counter my_project_folder/ -a .log,.temp
 # Exclude specific files or directories using glob patterns
 token-counter my_project_folder/ --exclude "*.log" --exclude "node_modules/"
 token-counter my_project_folder/ -x "*.log" -x "node_modules/"
+```
+
+### Recursive Directory Scanning
+```bash
+# Scan directories recursively (includes subdirectories)
+token-counter my_project_folder/ --recursive
+token-counter my_project_folder/ -r
+
+# Combine recursive with wildcard extension discovery
+token-counter my_project_folder/ -r -a "*"
+
+# Recursive scan with exclusions
+token-counter my_project_folder/ -r -x "node_modules/" -x ".git/"
 ```
 
 ### LLM Context Limit Comparison
@@ -91,13 +109,16 @@ token-counter my_long_article.txt -c
 ### Combined Options
 ```bash
 # Complex example combining multiple options
-token-counter my_project_folder/ -s -x "*.test.py" -c -e .py,.js
+token-counter my_project_folder/ -s -x "*.test.py" -c -e .py,.js -r
 
-# Process only Python files, exclude tests, and check limits
-token-counter . --extension .py --exclude "*test*" --check-limits
+# Process only Python files recursively, exclude tests, and check limits
+token-counter . --extension .py --exclude "*test*" --check-limits --recursive
+
+# Auto-discover extensions recursively with exclusions
+token-counter my_project/ -r -a "*" -x "node_modules/" -x ".git/"
 
 # Add log files to processing and use specific model
-token-counter logs/ --add-extensions .log --model p50k_base
+token-counter logs/ --add-extensions .log --model p50k_base --recursive
 ```
 
 ## Complete Option Reference
@@ -107,9 +128,10 @@ token-counter logs/ --add-extensions .log --model p50k_base
 | `--model` | `-m` | Specify the encoding model (e.g., 'cl100k_base', 'p50k_base') |
 | `--select-encoding` | `-s` | Interactively select the encoding model from a list |
 | `--extension` | `-e` | Override default file extensions (comma-separated) |
-| `--add-extensions` | `-a` | Add to default file extensions (comma-separated) |
+| `--add-extensions` | `-a` | Add to default file extensions (comma-separated). Use `*` for auto-discovery |
 | `--exclude` | `-x` | Exclude files/directories using glob patterns (repeatable) |
 | `--check-limits` | `-c` | Compare token count against LLM context window limits |
+| `--recursive` | `-r` | Recursively scan subdirectories when processing directories |
 | `--help` | | Show help message and exit |
 
 ### Examples
@@ -126,6 +148,9 @@ token-counter logs/ --add-extensions .log --model p50k_base
     token-counter . --extension .py,.js
     token-counter . -e .py,.js
     token-counter . --add-extensions .log,.xml
+    token-counter . -a "*" 
+    token-counter . --recursive
+    token-counter . -r -a "*" -x ".git/"
     ```
 
 ## Customizing File Extensions

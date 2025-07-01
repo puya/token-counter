@@ -54,6 +54,42 @@ def is_excluded(path: str, exclude_patterns: List[str]) -> bool:
             return True
     return False
 
+def discover_extensions_in_directory(directory_path: str, max_files: int = 1000, recursive: bool = False) -> List[str]:
+    """Discover all unique file extensions in a directory."""
+    extensions = set()
+    file_count = 0
+    try:
+        directory = Path(directory_path)
+        if not directory.is_dir():
+            return []
+        
+        if recursive:
+            # Recursive scan using os.walk
+            for root, dirs, filenames in os.walk(directory):
+                for filename in filenames:
+                    file_path = Path(root) / filename
+                    if file_path.suffix:
+                        extensions.add(file_path.suffix.lower())
+                        file_count += 1
+                        # Safety limit to prevent processing too many files
+                        if file_count > max_files:
+                            console.print(f"[bold yellow]Warning:[/] Stopped after scanning {max_files} files in {directory_path}")
+                            return sorted(list(extensions))
+        else:
+            # Non-recursive scan
+            for file_path in directory.iterdir():
+                if file_path.is_file() and file_path.suffix:
+                    extensions.add(file_path.suffix.lower())
+                    file_count += 1
+                    # Safety limit to prevent processing too many files
+                    if file_count > max_files:
+                        console.print(f"[bold yellow]Warning:[/] Stopped after scanning {max_files} files in {directory_path}")
+                        break
+        
+        return sorted(list(extensions))
+    except (OSError, PermissionError):
+        return []
+
 @app.command()
 def main(
     paths: Optional[List[str]] = typer.Argument(None, help="One or more file paths or directory paths to count tokens in. If not provided, reads from stdin."),
@@ -91,7 +127,13 @@ def main(
         None, 
         "--add-extensions", 
         "-a", 
-        help="""Comma-separated list of file extensions to add to the default allowed extensions (e.g., '.log,.temp')."""
+        help="""Comma-separated list of file extensions to add to the default allowed extensions (e.g., '.log,.temp'). Use '*' to discover all extensions in the target directory."""
+    ),
+    recursive: bool = typer.Option(
+        False,
+        "--recursive",
+        "-r",
+        help="Recursively scan subdirectories when processing directories."
     )
 ):
     """Counts the tokens in text files or stdin and displays the result."""
@@ -134,7 +176,38 @@ def main(
     elif add_extensions:
         processed_extensions = []
         for ext_arg in add_extensions:
-            processed_extensions.extend([e.strip() if e.strip().startswith('.') else '.' + e.strip() for e in ext_arg.split(',')])
+            # Handle wildcard for auto-discovery
+            if ext_arg.strip() == '*':
+                # Discover extensions from target directories
+                if paths:
+                    for path in paths:
+                        path_obj = Path(path)
+                        if path_obj.is_dir():
+                            discovered = discover_extensions_in_directory(str(path_obj), recursive=recursive)
+                            processed_extensions.extend(discovered)
+                            if discovered:
+                                recursive_msg = " (recursive)" if recursive else ""
+                                console.print(f"[bold green]Discovered extensions in {path}{recursive_msg}:[/] {', '.join(discovered)}")
+                        elif path_obj.parent.is_dir():
+                            # If it's a file, discover from its parent directory
+                            discovered = discover_extensions_in_directory(str(path_obj.parent), recursive=False)
+                            processed_extensions.extend(discovered)
+                            if discovered:
+                                console.print(f"[bold green]Discovered extensions in {path_obj.parent}:[/] {', '.join(discovered)}")
+                else:
+                    # If no paths provided, discover from current directory
+                    console.print("[bold yellow]Warning:[/] Using wildcard (*) without specifying a path will scan the current directory.")
+                    discovered = discover_extensions_in_directory(".", recursive=recursive)
+                    processed_extensions.extend(discovered)
+                    if discovered:
+                        recursive_msg = " (recursive)" if recursive else ""
+                        console.print(f"[bold green]Discovered extensions in current directory{recursive_msg}:[/] {', '.join(discovered)}")
+                        # Show a warning if many extensions were found
+                        if len(discovered) > 10:
+                            console.print(f"[bold yellow]Warning:[/] Found {len(discovered)} different extensions. This may process many files.")
+            else:
+                # Handle regular extension list
+                processed_extensions.extend([e.strip() if e.strip().startswith('.') else '.' + e.strip() for e in ext_arg.split(',')])
         current_file_extensions.extend(processed_extensions)
 
     current_file_extensions = tuple(sorted(list(set(current_file_extensions)))) # Remove duplicates and convert to tuple
@@ -147,14 +220,27 @@ def main(
                     if path_obj.suffix in current_file_extensions:
                         files_to_process.append(str(path_obj))
             elif path_obj.is_dir():
-                for root, dirs, filenames in os.walk(path_obj):
-                    # Filter out excluded directories from traversal
-                    dirs[:] = [d for d in dirs if not is_excluded(os.path.join(root, d), exclude_patterns)]
-                    for filename in filenames:
-                        file_full_path = os.path.join(root, filename)
-                        if not is_excluded(file_full_path, exclude_patterns): # Exclude files
-                            if Path(file_full_path).suffix in current_file_extensions:
-                                files_to_process.append(file_full_path)
+                if recursive:
+                    # Recursive directory traversal
+                    for root, dirs, filenames in os.walk(path_obj):
+                        # Filter out excluded directories from traversal
+                        dirs[:] = [d for d in dirs if not is_excluded(os.path.join(root, d), exclude_patterns)]
+                        for filename in filenames:
+                            file_full_path = os.path.join(root, filename)
+                            if not is_excluded(file_full_path, exclude_patterns): # Exclude files
+                                if Path(file_full_path).suffix in current_file_extensions:
+                                    files_to_process.append(file_full_path)
+                else:
+                    # Non-recursive: only scan the immediate directory
+                    try:
+                        for file_path in path_obj.iterdir():
+                            if file_path.is_file():
+                                file_full_path = str(file_path)
+                                if not is_excluded(file_full_path, exclude_patterns):
+                                    if file_path.suffix in current_file_extensions:
+                                        files_to_process.append(file_full_path)
+                    except (OSError, PermissionError):
+                        console.print(f"[bold red]Error:[/] Permission denied or error accessing directory: [cyan]{path_obj}[/cyan]", style="bold")
             else:
                 console.print(f"[bold red]Error:[/] Path not found or not a file/directory: [cyan]{p}[/cyan]", style="bold")
                 raise typer.Exit(code=1)
