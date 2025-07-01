@@ -97,3 +97,7 @@ venv.bak/
 # Keep uv.lock for CLI applications (reproducible builds)
 # Uncomment next line if you want to ignore it for library development:
 # uv.lock
+
+# Build artifacts and distribution
+build/
+dist/
