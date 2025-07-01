@@ -66,6 +66,27 @@ The GitHub Actions workflow will still handle PyPI publishing and GitHub release
    - Repository Settings → Actions → General
    - Ensure "Read and write permissions" is enabled for `GITHUB_TOKEN`
 
+## 🤖 GitHub Actions Workflow
+
+The automated release process is powered by `.github/workflows/release.yml` which:
+
+### Triggers
+- **Automatic**: Runs when any tag matching `v*` is pushed (e.g., `v0.1.5`)
+- **No manual intervention required**
+
+### Workflow Steps
+1. **Environment Setup**: Ubuntu latest, Python 3.10
+2. **Package Building**: Uses `python -m build`
+3. **Package Validation**: Runs `twine check`
+4. **PyPI Publishing**: Uses trusted publishing (no API keys required)
+5. **Changelog Generation**: Auto-generates from git commits since last tag
+6. **GitHub Release**: Creates release with auto-generated notes and artifacts
+
+### Security
+- **Trusted Publishing**: No API tokens stored in GitHub secrets
+- **Minimal Permissions**: Only `contents: write` and `id-token: write`
+- **Artifact Verification**: Digital attestations generated automatically
+
 ## 🛠 Troubleshooting
 
 ### PyPI Publishing Fails

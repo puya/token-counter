@@ -229,3 +229,7 @@ To use the `token-counter` command from anywhere in your system, you need to add
         ```
 
     Now you can run `token-counter` from any directory.
+
+## Contributing
+
+For information about the development process and how to contribute, see [RELEASING.md](RELEASING.md).
