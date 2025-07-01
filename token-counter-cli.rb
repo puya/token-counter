@@ -1,16 +1,17 @@
-# Homebrew Formula Template (for after PyPI release)
+# Homebrew Formula for Token Counter CLI
 # This goes in homebrew-core or your own tap
 
-class TokenCounter < Formula
+class TokenCounterCli < Formula
   include Language::Python::Virtualenv
 
   desc "Fast CLI tool for counting tokens with LLM context limit comparison"
   homepage "https://github.com/puya/token-counter"
-  url "https://files.pythonhosted.org/packages/source/t/token-counter/token-counter-0.1.0.tar.gz"
-  sha256 "REPLACE_WITH_ACTUAL_SHA256"  # Get this from: shasum -a 256 dist/token_counter-0.1.0.tar.gz
+  url "https://files.pythonhosted.org/packages/source/t/token-counter-cli/token_counter_cli-0.1.0.tar.gz"
+  sha256 "bb0dc11a3efcd26582f784a74165e2f32946b6755c3c97c8758df0c3afe30702"
   license "MIT"
 
-  depends_on "python@3.11"
+  depends_on "rust" => :build
+  depends_on "python@3.12"
 
   resource "inquirerpy" do
     url "https://files.pythonhosted.org/packages/source/i/inquirerpy/inquirerpy-0.3.4.tar.gz"
@@ -18,18 +19,18 @@ class TokenCounter < Formula
   end
 
   resource "rich" do
-    url "https://files.pythonhosted.org/packages/source/r/rich/rich-14.0.0.tar.gz"  
-    sha256 "8260cda28e3db6bf04d2d1ef4dbc03ba80a824c88b0e7668a0f23126a424844a"
+    url "https://files.pythonhosted.org/packages/source/r/rich/rich-14.0.0.tar.gz"
+    sha256 "82f1bc23a6a21ebca4ae0c45af9bdbc492ed20231dcb63f297d6d1021a9d5725"
   end
 
   resource "tiktoken" do
     url "https://files.pythonhosted.org/packages/source/t/tiktoken/tiktoken-0.9.0.tar.gz"
-    sha256 "99c65c1d9e21325e1a19d1d2d3b1beeca25e81ccddfd20dfcedb21e86bfcda48"
+    sha256 "d02a5ca6a938e0490e1ff957bc48c8b078c88cb83977be1625b1fd8aac792c5d"
   end
 
   resource "typer" do
     url "https://files.pythonhosted.org/packages/source/t/typer/typer-0.16.0.tar.gz"
-    sha256 "6e5714e7e9c90b86ba253d85feb38feff56a2cbca3ea1a1be1ea10b9830a1c2b8"
+    sha256 "af377ffaee1dbe37ae9440cb4e8f11686ea5ce4e9bae01b84ae7c63b87f1dd3b"
   end
 
   def install
@@ -38,5 +39,6 @@ class TokenCounter < Formula
 
   test do
     assert_match "Token Count Result", pipe_output("#{bin}/token-counter", "test text")
+    assert_match "Usage:", shell_output("#{bin}/token-counter --help")
   end
 end
